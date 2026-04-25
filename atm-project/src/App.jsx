@@ -1,53 +1,20 @@
-import { useState } from "react";
-import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-export default function App() {
-  const [pin, setPin] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [balance, setBalance] = useState(10000);
+import Login from "./pages/login";
+import Dashboard from "./pages/Dashboard";
+import ATM from "./pages/ATM";
+import Transactions from "./pages/Transactions";
 
-  const handleLogin = () => {
-    if (pin === "1234") {
-      setLoggedIn(true);
-    } else {
-      alert("Wrong PIN");
-    }
-  };
-
-  const withdrawMoney = () => {
-    if (balance >= 500) {
-      setBalance(balance - 500);
-    } else {
-      alert("Insufficient balance");
-    }
-  };
-
-  const depositMoney = () => {
-    setBalance(balance + 1000);
-  };
-
-  const logout = () => {
-    setLoggedIn(false);
-    setPin("");
-  };
-
+function App() {
   return (
-    <>
-      {!loggedIn ? (
-        <Login
-          pin={pin}
-          setPin={setPin}
-          handleLogin={handleLogin}
-        />
-      ) : (
-        <Dashboard
-          balance={balance}
-          withdrawMoney={withdrawMoney}
-          depositMoney={depositMoney}
-          logout={logout}
-        />
-      )}
-    </>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/atm" element={<ATM />} />
+      <Route path="/transactions" element={<Transactions />} />
+    </Routes>
   );
 }
+
+export default App;

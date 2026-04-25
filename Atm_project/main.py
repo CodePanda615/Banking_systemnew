@@ -1,34 +1,44 @@
 from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
 from controller.bank_controller import BankController
 from auth import create_token, verify_token
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 controller = BankController()
 
+# ✅ CORS (REQUIRED for React)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# ---------------- HOME ----------------
-@app.get("/")
-def home():
-    return {"message": "Welcome to Banking API"}
+# ✅ Request model
+class LoginRequest(BaseModel):
+    account_id: int
+    name: str
+    pin: int
 
 
 # ---------------- LOGIN ----------------
 @app.post("/login")
-def login(account_id: int, name: str, pin: int):
-    if not controller.login(account_id, name, pin):
+def login(data: LoginRequest):
+    if not controller.login(data.account_id, data.name, data.pin):
         raise HTTPException(
             status_code=401,
             detail="Invalid credentials"
         )
 
-    token = create_token(account_id, name)
+    token = create_token(data.account_id, data.name)
 
     return {
         "message": "Login successful",
         "access_token": token,
         "token_type": "bearer"
     }
-
 
 # ---------------- CHECK BALANCE ----------------
 @app.get("/balance/{account_id}")
